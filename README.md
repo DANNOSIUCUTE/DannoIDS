@@ -1,10 +1,10 @@
-# 🛡️ Web Attack Detection ML System
+# Web Attack Detection ML System
 
 Hệ thống phát hiện và phân loại tấn công web dựa trên Machine Learning (LightGBM Multi-Class) với kiến trúc 2 tầng chuẩn mực: **Unified Parser** $\rightarrow$ **30 Features Extractor** $\rightarrow$ **Security Classifier**.
 
 ---
 
-## 📌 Điểm Nổi Bật
+## Điểm Nổi Bật
 
 1. **Hỗ trợ 4 định dạng request**:
    - **Type 1 – Raw URL**: Phân tích URL và query parameters.
@@ -28,7 +28,7 @@ Hệ thống phát hiện và phân loại tấn công web dựa trên Machine L
 
 ---
 
-## 📂 Cấu Trúc Thư Mục
+## Cấu Trúc Thư Mục
 
 ```
 web_attack_detection_system/
@@ -53,7 +53,7 @@ web_attack_detection_system/
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Sử Dụng
+## Hướng Dẫn Cài Đặt & Sử Dụng
 
 ### 1. Cài đặt thư viện phụ thuộc
 Yêu cầu Python >= 3.9:
@@ -93,7 +93,7 @@ Mở trình duyệt truy cập: **`http://localhost:5000`**
 
 ---
 
-## 📊 Hiệu Năng Mô Hình
+## Hiệu Năng Mô Hình
 
 * **Thuật toán**: LightGBM Multi-Class Classifier
 * **Độ chính xác (Accuracy)**: **96.47%**
