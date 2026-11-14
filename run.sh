@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "================================================================"
-echo "          WEB ATTACK DETECTION SYSTEM (ML & IDS)"
+echo "          DannoIDS - ML WEB ATTACK DETECTION SYSTEM"
 echo "================================================================"
 echo ""
 echo "  [1] Start Web Dashboard (http://localhost:5000)"

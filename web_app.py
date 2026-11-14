@@ -21,7 +21,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Attack Detection Dashboard</title>
+    <title>DannoIDS &mdash; Web Attack Detection Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -844,7 +844,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <div class="header">
     <div class="header-inner">
         <div class="brand">
-            <h1>Web Attack Detection &amp; Classification</h1>
+            <h1>DannoIDS &middot; Web Attack Detection</h1>
         </div>
         <div class="header-right">
             <span>Unified Parser &middot; 30 Features &middot; LightGBM</span>

@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul
-title Web Attack Detection System
+title DannoIDS - Web Attack Detection System
 cls
 echo ================================================================
-echo           WEB ATTACK DETECTION SYSTEM (ML & IDS)
+echo           DannoIDS - ML WEB ATTACK DETECTION SYSTEM
 echo ================================================================
 echo.
 echo  [1] Khoi dong Web Dashboard (http://localhost:5000)
