@@ -1,99 +1,102 @@
 <div align="center">
 
-# 🛡️ DannoIDS — Web Attack Detection & Intrusion Detection System
-### *Intelligent Web Threat Detection Engine Powered by Multi-Class Machine Learning & Zero-Trust Normalization*
+# DannoIDS: Web Attack Detection and Intrusion Detection System
+### High-Performance Web Threat Detection Engine Powered by Multi-Class Machine Learning and Zero-Trust Request Normalization
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg?logo=python&logoColor=white)](#-yêu-cầu-hệ-thống)
-[![Engine](https://img.shields.io/badge/ML%20Engine-LightGBM-brightgreen.svg)](#-hiệu-năng--thực-nghiệm)
-[![Accuracy](https://img.shields.io/badge/Test%20Accuracy-96.47%25-success.svg)](#-hiệu-năng--thực-nghiệm)
-[![F1-Macro](https://img.shields.io/badge/Macro%20F1-0.9690-green.svg)](#-hiệu-năng--thực-nghiệm)
-[![Latency](https://img.shields.io/badge/Inference-%3C1ms%20%2F%20req-orange.svg)](#-hiệu-năng--thực-nghiệm)
-[![UI](https://img.shields.io/badge/Theme-Pure%20Minimalist%20B%26W-black.svg)](#-giao-diện-web-dashboard)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](#-bản-quyền--giấy-phép)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](requirements.txt)
+[![Engine](https://img.shields.io/badge/ML%20Engine-LightGBM-brightgreen.svg)](#performance-and-benchmarks)
+[![Accuracy](https://img.shields.io/badge/Test%20Accuracy-96.47%25-success.svg)](#performance-and-benchmarks)
+[![F1-Macro](https://img.shields.io/badge/Macro%20F1-0.9690-green.svg)](#performance-and-benchmarks)
+[![Latency](https://img.shields.io/badge/Inference-%3C1ms%20%2F%20req-orange.svg)](#performance-and-benchmarks)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](#license)
 
 <br/>
 
-[Tổng Quan](#-tổng-quan-dự-án) • [Kiến Trúc](#-kiến-trúc-hệ-thống) • [4 Định Dạng Đầu Vào](#-hỗ-trợ-4-định-dạng-đầu-vào) • [Bộ 30 Đặc Trưng](#-bộ-30-đặc-trưng-chuyên-sâu) • [Cài Đặt & Sử Dụng](#-cài-đặt--hướng-dẫn-sử-dụng) • [REST API](#-tài-liệu-rest-api) • [Benchmarks](#-hiệu-năng--thực-nghiệm)
+[Overview](#overview) | [System Architecture](#system-architecture) | [Supported Input Formats](#supported-input-formats) | [30-Dimensional Feature Matrix](#30-dimensional-feature-matrix) | [Installation & Usage](#installation-and-usage) | [REST API Reference](#rest-api-reference) | [Performance Benchmarks](#performance-and-benchmarks)
 
 ---
 
 </div>
 
-## 📖 Tổng Quan Dự Án
+## Overview
 
-**DannoIDS** là hệ thống Phát hiện Xâm nhập Ứng dụng Web (Web Application IDS) thế hệ mới, kết hợp giữa kỹ thuật **Zero-Trust Input Normalization** và mô hình học máy **LightGBM Multi-Class**. 
+**DannoIDS** is an intelligent Web Application Intrusion Detection System (IDS) engineered to identify, classify, and localize web-based application attacks in real time.
 
-Khác với các công cụ WAF dựa trên luật (rule-based) truyền thống dễ bị bypass bởi obfuscation hoặc gây ra nhiều cảnh báo giả (false positives), DannoIDS phân tích các thuộc tính từ vựng, hình thái học, cấu trúc mã hóa và entropy thông tin của request để đưa ra phán đoán chính xác trong thời gian thực (**< 1ms/request**).
+Conventional Web Application Firewalls (WAFs) relying primarily on rigid regular expressions often suffer from high operational maintenance costs, bypasses via sophisticated evasion/obfuscation techniques, and elevated false positive rates on benign user traffic. DannoIDS addresses these challenges by combining a **deterministic, zero-trust input parser** with a **30-dimensional feature engineering pipeline** and a **LightGBM multi-class classification model**.
 
-### ✨ Đặc Điểm Nổi Bật
-
-* **Kiến Trúc Tách Biệt Độc Lập 2 Tầng**:
-  * **Tầng 1 (Parser)**: Chuẩn hóa dữ liệu về định dạng thống nhất `NormalizedRequest`. Parser tuyệt đối **không** can thiệp phán đoán request là Normal hay Attack.
-  * **Tầng 2 (Detector & Feature Extractor)**: Trích xuất 30 đặc trưng kỹ thuật số, định vị thành phần độc hại (`Threat Origin`), tính toán xác suất phân loại đa lớp.
-* **Hỗ Trợ 4 Định Dạng Đầu Vào Đa Dạng**: Phân tích trực tiếp Raw URL, Raw HTTP Request, Access Logs (Apache, Nginx, W3C) và lệnh cURL tĩnh (tuyệt đối không thực thi shell script).
-* **Phân Loại 6 Nhãn Đe Dọa (Multi-Class)**: Không chỉ dừng lại ở cảnh báo nhị phân (Attack vs Normal), DannoIDS phân định chi tiết loại hình tấn công (SQLi, XSS, Cmd Injection, Path Traversal, SSTI/XXE).
-* **Định Vị Vị Trí Tấn Công (Threat Localization)**: Chỉ rõ payload nguy hiểm xuất hiện ở đâu (`URI Path`, `Query String`, `Request Body`, hay `HTTP Headers`).
-* **Triệt Tiêu Cảnh Báo Giả (False Positive Mitigation)**: Tinh chỉnh ranh giới từ vựng (`\bcat\b`, `\bcmd\b`) giúp các đường dẫn hợp lệ (ví dụ: `notification.php`, `application/json`) không bị nhận diện nhầm là Command Injection.
-* **Giao Diện Web Minimalist Độc Lập**: Giao diện thuần đen - trắng (`#000000` / `#ffffff`), typography hiện đại font **Montserrat**, không phụ thuộc framework web bên ngoài (chạy trực tiếp bằng Python standard library).
+Operating at an inference latency of **less than 1 millisecond per request** (> 1,100 requests/second on a single CPU core), DannoIDS delivers high-throughput threat screening suitable for reverse proxies, API gateways, offline access log audits, and security operations centers (SOC).
 
 ---
 
-## 🏗️ Kiến Trúc Hệ Thống
+## Key Capabilities
 
-DannoIDS vận hành theo quy trình xử lý 3 giai đoạn khép kín và an toàn:
+* **Strict Two-Stage Decoupled Pipeline**:
+  * **Stage 1 (Unified Normalization)**: Converts heterogeneous input formats into an immutable, structured `NormalizedRequest` object. The parser performs syntactic restructuring only and does not make classification decisions.
+  * **Stage 2 (Feature Extraction & ML Inference)**: Computes 30 lexical, statistical, encoding, and heuristic features, predicts multi-class threat probabilities, and isolates the specific attack injection location (`Threat Origin`).
+* **Universal Multi-Format Ingestion**: Supports four common web input representations: Raw URLs, Raw HTTP requests (RFC 7230), cURL command strings (parsed via an abstract syntax tokenizer without shell execution), and web server access logs (Apache, Nginx, W3C).
+* **6-Class Granular Threat Taxonomy**: Classifies traffic into six distinct categories: Normal traffic, SQL Injection (SQLi), Cross-Site Scripting (XSS), Command Injection, Path Traversal / Local File Inclusion (LFI), and Other Advanced Attacks (SSTI, XXE, SSRF, NoSQLi).
+* **Precise Threat Localization**: Identifies the exact component containing the malicious payload (`Request Body`, `Query Parameter`, `URI Path`, or `HTTP Headers`).
+* **Heuristic False Positive Mitigation**: Employs context-aware boundary validation (e.g., regex word boundaries for command primitives such as `\bcat\b` and `\bcmd\b`) to ensure legitimate administrative and resource paths (such as `notification.php` or `application/json`) are never misclassified.
+* **Self-Contained Minimalist Web Dashboard**: Pure black-and-white interface (`#000000` / `#ffffff`) rendered with the **Montserrat** typography system. Built entirely on Python standard library modules with zero third-party web framework dependencies.
+
+---
+
+## System Architecture
+
+DannoIDS operates through an end-to-end, multi-stage processing pipeline:
 
 ```
 +-----------------------------------------------------------------------------------+
-|                            ĐẦU VÀO ĐA DẠNG (INPUT SOURCES)                        |
+|                            HETEROGENEOUS INPUT SOURCES                            |
 |   [Type 1: Raw URL]  [Type 2: Raw HTTP]  [Type 3: cURL Command]  [Type 4: Logs]   |
 +-----------------------------------------+-----------------------------------------+
                                           |
                                           v
 +-----------------------------------------------------------------------------------+
-|                 GIAI ĐOẠN 1: ZERO-TRUST PARSER (request_parser.py)                 |
-|  * Static Tokenization & Obfuscation Cleanup (không thực thi lệnh shell)          |
-|  * Trích xuất & cấu trúc hóa thành: NormalizedRequest Object                      |
+|               STAGE 1: ZERO-TRUST PARSER & NORMALIZATION (request_parser.py)      |
+|  * Static Tokenization & Decoding Sanitation (no shell execution / no eval)       |
+|  * Standardized Output: NormalizedRequest Object                                  |
 |    { method, url, path, query, headers, body, content_type, input_type }         |
 +-----------------------------------------+-----------------------------------------+
                                           |
                                           v
 +-----------------------------------------------------------------------------------+
-|               GIAI ĐOẠN 2: FEATURE ENGINEERING (30 FEATURES) (detector.py)        |
-|  * 7 Đặc trưng Chiều dài & Cấu trúc (Length, Path Depth, Param Lengths,...)        |
-|  * 5 Đặc trưng Thống kê & Phân bố Ký tự (Special Ratio, Entropy, Digits,...)       |
-|  * 5 Đặc trưng Mã hóa & Obfuscation (URL Encoded, Double Encoded, Null Byte,...)  |
-|  * 13 Dấu hiệu Cú pháp Tấn công (SQLi, XSS, Cmd, Traversal, SSTI, XXE, SSRF,...)  |
+|               STAGE 2: FEATURE ENGINEERING PIPELINE (detector.py)                 |
+|  * 7 Structural & Dimension Metrics (Length, Path Depth, Parameter Lengths)       |
+|  * 5 Statistical & Entropy Metrics (Shannon Entropy, Special Ratio, Digits)       |
+|  * 5 Obfuscation & Encoding Metrics (Percent Encoded, Double Encoded, Null Byte)  |
+|  * 13 Threat Heuristics (SQLi, XSS, Cmd, Traversal, SSTI, XXE, SSRF, NoSQL)       |
 +-----------------------------------------+-----------------------------------------+
                                           |
                                           v
 +-----------------------------------------------------------------------------------+
-|              GIAI ĐOẠN 3: MULTI-CLASS ML INFERENCE ENGINE (LightGBM)              |
-|  * Phân phối xác suất 6 phân lớp (Softmax Probabilities)                         |
-|  * Định vị nguồn đe dọa (Threat Origin: Body, Query, Path, Header)                |
-|  * Xác thực Heuristics & Giảm thiểu False Positive                               |
+|               STAGE 3: MULTI-CLASS ML INFERENCE ENGINE (LightGBM)                 |
+|  * Softmax Probability Distribution across 6 Attack Classes                       |
+|  * Threat Origin Localization (Body, Query String, Path, Headers)                 |
+|  * Context-Aware Validation & False-Positive Suppression Heuristics              |
 +-----------------------------------------+-----------------------------------------+
                                           |
                                           v
 +-----------------------------------------------------------------------------------+
-|                           ĐẦU RA VÀ TÍCH HỢP (OUTPUTS)                            |
+|                               OUTPUT INTERFACES                                   |
 |       [Web Dashboard :5000]       [REST API JSON]       [CLI Batch Scanner]       |
 +-----------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 🎯 Hỗ Trợ 4 Định Dạng Đầu Vào
+## Supported Input Formats
 
-Tất cả các định dạng sau khi qua bộ tiền xử lý đều được quy đổi về cấu trúc chuẩn:
+Regardless of how raw traffic is provided, Stage 1 guarantees complete normalization into a uniform schema:
 
-| Định dạng | Mô tả kỹ thuật | Ví dụ thực tế |
+| Format Type | Description | Representative Input Example |
 | :--- | :--- | :--- |
-| **Type 1 – Raw URL** | Phân tích URL độc lập, tách biệt giao thức, domain, URI path và query string. | `https://example.com/search?q=test&page=1` |
-| **Type 2 – Raw HTTP Request** | Bóc tách đầy đủ RFC 7230: HTTP Method, Target Path, Protocol, Headers và Request Body. | `POST /api/v1/auth HTTP/1.1`<br>`Host: api.site.com`<br>`Content-Type: application/json`<br><br>`{"user":"admin"}` |
-| **Type 3 – cURL Command** | Parser tĩnh an toàn qua Lexer/Tokenizer (hỗ trợ `-X`, `-H`, `-d`, `--data-urlencode`, `-G`, `--path-as-is`, boolean flags). **Không dùng `eval()` / `bash`**. | `curl -i -X POST http://target/login -d "username=admin&password=123"` |
-| **Type 4 – Access Log** | Phân tích nhật ký máy chủ web (Common Log Format, Combined Log Format của Nginx, Apache, IIS). | `192.168.1.100 - - [14/Nov/2026:10:00:00 +0700] "GET /index.php?id=1 HTTP/1.1" 200 4502` |
+| **Type 1: Raw URL** | Standalone URL parsing. Splits scheme, network location, path hierarchy, and query parameters. | `https://example.com/search?q=test&page=1` |
+| **Type 2: Raw HTTP Request** | Full RFC 7230 request parser. Extracts method, target URI, HTTP version, key-value headers, and raw body. | `POST /login HTTP/1.1`<br>`Host: target.com`<br>`Content-Type: application/x-www-form-urlencoded`<br><br>`user=admin&pass=123` |
+| **Type 3: cURL Command** | Abstract syntax parser. Extracts flags (`-X`, `-H`, `-d`, `--data-urlencode`, `-G`, `--path-as-is`). Never executes commands. | `curl -i -X POST http://target/login -d "username=admin&password=123"` |
+| **Type 4: Access Log** | Parses web server access records across Common Log Format (CLF), Combined Log Format, and custom formats. | `192.168.1.10 - - [14/Nov/2026:10:00:00 +0000] "GET /app?id=1 HTTP/1.1" 200 4502` |
 
-### Cấu Trúc Dữ Liệu Sau Chuẩn Hóa (`NormalizedRequest`)
+### Normalized Request Schema (`NormalizedRequest`)
 
 ```json
 {
@@ -110,188 +113,188 @@ Tất cả các định dạng sau khi qua bộ tiền xử lý đều được 
 
 ---
 
-## 🏷️ Danh Mục Phân Loại Tấn Công (6 Classes)
+## Attack Classification Taxonomy
 
-Mô hình phân loại đa lớp của DannoIDS nhận diện 6 danh mục tấn công với độ chính xác cao:
+The underlying multi-class classifier categorizes requests into six mutually exclusive classes:
 
-| ID | Nhãn Phân Loại | Ký Hiệu | Ví Dụ Đặc Trưng |
-| :---: | :--- | :---: | :--- |
-| **0** | **Normal** | `Normal` | Lưu lượng hợp lệ, biểu mẫu đăng nhập, truy vấn dữ liệu chuẩn. |
-| **1** | **SQL Injection** | `SQLi` | `' UNION SELECT null, username, password FROM users--`, `OR 1=1` |
-| **2** | **Cross-Site Scripting** | `XSS` | `<script>alert(document.cookie)</script>`, `<svg/onload=confirm()>` |
-| **3** | **Command Injection** | `Cmd_Inj` | `; cat /etc/passwd`, `| ping -c 4 127.0.0.1`, `& whoami` |
-| **4** | **Path Traversal / LFI** | `Traversal` | `../../../../etc/passwd`, `..%2f..%2fwindows/win.ini` |
-| **5** | **Other Attack** | `Other` | Server-Side Template Injection (`{{7*7}}`), XXE Injection, SSRF, NoSQLi |
-
----
-
-## 🔬 Bộ 30 Đặc Trưng Chuyên Sâu (Feature Matrix)
-
-Hệ thống trích xuất 30 đặc trưng toán học và ngữ nghĩa từ các phần tử của request:
-
-```text
-[Chiều Dài & Hình Thái]
-  1. length               : Tổng chiều dài toàn bộ request chuỗi
-  2. path_length          : Chiều dài của URI path
-  3. query_length         : Chiều dài của chuỗi Query Parameter
-  4. path_depth           : Độ sâu phân cấp thư mục (số lượng dấu /)
-  5. max_param_length     : Chiều dài lớn nhất của một tham số bất kỳ
-  6. avg_param_length     : Chiều dài trung bình của các tham số
-  7. uppercase_ratio      : Tỷ lệ ký tự viết hoa (thường xuất hiện khi né WAF: sElEcT)
-
-[Thống Kê & Entropy Ký Tự]
-  8. special_char_count   : Tổng số ký tự đặc biệt (', ", <, >, ;, $, |, &,...)
-  9. special_ratio        : Tỷ lệ ký tự đặc biệt trên tổng độ dài
- 10. num_digits           : Số lượng ký tự số
- 11. num_params           : Số lượng tham số đầu vào
- 12. entropy              : Độ hỗn loạn thông tin Shannon Entropy (phát hiện shellcode/token)
- 13. non_ascii_count      : Số lượng ký tự ngoài bảng mã chuẩn ASCII
-
-[Mã Hóa & Kỹ Thuật Lẩn Tránh]
- 14. percent_encoding     : Số lượng dấu mã hóa phần trăm (%20, %27,...)
- 15. has_encoded          : Cờ nhị phân phát hiện có dữ liệu URL encoded
- 16. double_encoded       : Phát hiện kỹ thuật Double Encoding (%2527)
- 17. has_null_byte        : Dấu hiệu kỹ thuật Poison Null Byte (%00)
- 18. has_unicode_escape   : Dấu hiệu ký tự Unicode Escape (\u0027)
-
-[Dấu Hiệu & Mẫu Cú Pháp Tấn Công]
- 19. sql_keywords         : Đếm từ khóa SQL (union, select, from, information_schema,...)
- 20. js_keywords          : Đếm từ khóa JavaScript / HTML (<script, onerror, onload, alert,...)
- 21. cmd_keywords         : Đếm từ khóa lệnh OS có biên từ (\bcat\b, \bwhoami\b, \bcmd\b,...)
- 22. path_traversal       : Tần suất xuất hiện mẫu ../ hoặc ..\\
- 23. single_quotes        : Số lượng dấu nháy đơn (')
- 24. is_brute             : Dấu hiệu tấn công Brute Force / Fuzzing lặp lại
- 25. has_path_traversal   : Cờ nhị phân phát hiện Directory Traversal
- 26. has_admin            : Sự xuất hiện của đường dẫn nhạy cảm (/admin, /root, /config)
- 27. nosql_keywords       : Mẫu truy vấn NoSQL Injection ($where, $ne, $regex)
- 28. ssti_patterns        : Mẫu template engine (${...}, {{...}}, <%=...%>)
- 29. xxe_patterns         : Mẫu thực thể XML độc hại (<!ENTITY, SYSTEM)
- 30. ssrf_patterns        : Dấu hiệu truy xuất tài nguyên nội bộ (169.254.169.254, 127.0.0.1, file://)
-```
+| Class ID | Attack Label | Detection Focus | Exploit Signature Examples |
+| :---: | :--- | :--- | :--- |
+| **0** | **Normal** | Legitimate application traffic, valid authentication attempts, static assets. | Standard forms, benign API JSON payloads, image/asset fetches. |
+| **1** | **SQL Injection** | SQL query tampering, authentication bypass, data exfiltration via subqueries. | `' UNION SELECT null, username, password FROM users--`, `OR 1=1` |
+| **2** | **Cross-Site Scripting** | Client-side script injection via unescaped inputs (reflected, stored, DOM-based). | `<script>alert(document.cookie)</script>`, `<img src=x onerror=alert(1)>` |
+| **3** | **Command Injection** | Execution of arbitrary operating system commands through unvalidated arguments. | `; cat /etc/passwd`, `\| ping -c 4 127.0.0.1`, `&& whoami` |
+| **4** | **Path Traversal / LFI** | Unauthorized file system traversal to read sensitive server configuration files. | `../../../../etc/passwd`, `..%2f..%2fwindows/win.ini` |
+| **5** | **Other Attack** | Advanced injection vectors: SSTI, XML External Entity (XXE), SSRF, NoSQL injection. | `{{7*7}}`, `<!ENTITY xxe SYSTEM "file:///etc/passwd">`, `$where` |
 
 ---
 
-## 📁 Cấu Trúc Thư Mục Dự Án
+## 30-Dimensional Feature Matrix
+
+Every incoming request is transformed into a dense, 30-dimensional numerical feature vector:
+
+### 1. Structural and Morphological Features
+* `length`: Total character length of the normalized request.
+* `path_length`: Length of the URI path component.
+* `query_length`: Total length of the query parameter string.
+* `path_depth`: Directory hierarchy depth (count of `/` delimiters).
+* `max_param_length`: Maximum length observed across all input parameters.
+* `avg_param_length`: Arithmetic mean of parameter lengths.
+* `uppercase_ratio`: Ratio of uppercase characters to total length (frequently used in WAF evasion techniques, e.g., `sElEcT`).
+
+### 2. Statistical and Information Entropy Features
+* `special_char_count`: Total count of special characters (`'`, `"`, `<`, `>`, `;`, `$`, `|`, `&`, etc.).
+* `special_ratio`: Proportion of special characters relative to request length.
+* `num_digits`: Absolute count of numeric characters (`0-9`).
+* `num_params`: Total count of query parameters and form body keys.
+* `entropy`: Shannon Information Entropy of the request text (effective for identifying encrypted, encoded, or high-randomness shellcode).
+* `non_ascii_count`: Count of non-ASCII characters outside the standard printable range.
+
+### 3. Obfuscation and Encoding Indicators
+* `percent_encoding`: Frequency of hexadecimal URL percent-encoding tokens (`%20`, `%27`, etc.).
+* `has_encoded`: Binary flag indicating the presence of percent-encoded sequences.
+* `double_encoded`: Binary indicator detecting double URL encoding attempts (e.g., `%2527`).
+* `has_null_byte`: Binary indicator for poison null byte injection (`%00`).
+* `has_unicode_escape`: Binary indicator for unicode escape notation (`\u0027`).
+
+### 4. Threat Heuristic and Signature Patterns
+* `sql_keywords`: Frequency count of standard SQL keywords (`union`, `select`, `information_schema`, etc.).
+* `js_keywords`: Frequency count of script and browser DOM keywords (`<script`, `onerror`, `onload`, `eval`).
+* `cmd_keywords`: Frequency count of OS command primitives bounded by word boundaries (`\bcat\b`, `\bwhoami\b`, `\bcmd\b`).
+* `path_traversal`: Frequency of directory traversal patterns (`../` or `..\`).
+* `single_quotes`: Total count of single quote characters (`'`).
+* `is_brute`: Metric capturing repetitive parameter patterns indicative of fuzzing or brute-force attempts.
+* `has_path_traversal`: Binary flag indicating directory traversal presence.
+* `has_admin`: Binary flag denoting access to sensitive administrative routes (`/admin`, `/root`, `/config`).
+* `nosql_keywords`: Detection of NoSQL injection syntax (`$where`, `$ne`, `$regex`).
+* `ssti_patterns`: Detection of server-side template injection delimiters (`${...}`, `{{...}}`, `<%=...%>`).
+* `xxe_patterns`: Detection of XML entity declarations (`<!ENTITY`, `SYSTEM`).
+* `ssrf_patterns`: Detection of internal IP ranges and sensitive schemes (`169.254.169.254`, `127.0.0.1`, `file://`).
+
+---
+
+## Directory Structure
 
 ```
 DannoIDS/
-├── models/                               # Lưu trữ mô hình ML & siêu dữ liệu
-│   ├── best_model_multiclass.pkl         # Trọng số LightGBM 6 phân lớp
-│   ├── best_model_random_forest.pkl      # Mô hình đối sánh Random Forest
-│   ├── feature_names.pkl                 # Danh sách 30 tên đặc trưng chuẩn hóa
-│   ├── label_map.pkl                     # Bảng ánh xạ nhãn ID -> Tên tấn công
-│   └── model_metadata.json               # Báo cáo thông số & độ chính xác mô hình
+├── models/                               # Pretrained ML artifacts and metadata
+│   ├── best_model_multiclass.pkl         # Serialized LightGBM 6-class model
+│   ├── best_model_random_forest.pkl      # Benchmark Random Forest baseline model
+│   ├── feature_names.pkl                 # Serialized list of 30 feature names
+│   ├── label_map.pkl                     # Class ID to string label mappings
+│   └── model_metadata.json               # Hyperparameters and evaluation metrics
 │
-├── request_parser.py                     # Bộ tiền xử lý & chuẩn hóa 4 định dạng
-├── detector.py                           # Feature Extractor + Inference Engine + CLI
-├── web_app.py                            # Web Dashboard độc lập & REST API server
+├── request_parser.py                     # Deterministic 4-format normalization module
+├── detector.py                           # Feature engineering, ML inference engine, CLI
+├── web_app.py                            # Standalone Web Dashboard & REST API server
 │
-├── build_dataset.py                      # Kịch bản sinh & mở rộng tập dữ liệu 131k dòng
-├── train_multiclass.py                   # Quy trình huấn luyện mô hình LightGBM
-├── lab89.ipynb                           # Jupyter Notebook thực nghiệm & trực quan hóa
+├── build_dataset.py                      # Dataset generation and synthesis pipeline
+├── train_multiclass.py                   # LightGBM training and validation script
+├── lab89.ipynb                           # Research notebook for EDA and experiments
 │
-├── logsfile.txt                          # File log mẫu kiểm thử (10 Normal + 10 Attack)
-├── access.log                            # Mẫu log Web Server Nginx/Apache thực tế
-├── testlog.log                           # Mẫu log benchmark quốc tế (CSIC Dataset)
+├── logsfile.txt                          # Verification test log (10 Normal + 10 Attack cURL commands)
+├── access.log                            # Sample Nginx/Apache web server access log
+├── testlog.log                           # Standard CSIC benchmark test log
 │
-├── run.bat                               # Khởi chạy nhanh 1-Click (Windows)
-├── run.sh                                # Khởi chạy nhanh 1-Click (Linux/macOS)
-├── requirements.txt                      # Danh sách các gói thư viện Python
-└── README.md                             # Tài liệu kỹ thuật dự án
+├── run.bat                               # Windows one-click interactive launcher
+├── run.sh                                # Linux/macOS one-click interactive launcher
+├── requirements.txt                      # Minimal dependencies list
+├── README.md                             # Primary technical documentation (English)
+└── README_VN.md                          # Vietnamese documentation reference
 ```
 
 ---
 
-## ⚡ Cài Đặt & Hướng Dẫn Sử Dụng
+## Installation and Usage
 
-### 1. Yêu Cầu Môi Trường
-* **Python**: Phiên bản `>= 3.9` (Khuyến nghị Python 3.10 / 3.11).
-* **Hệ điều hành**: Windows 10/11, Ubuntu/Debian Linux, macOS.
+### Prerequisites
+* **Python Runtime**: Version `>= 3.9` (Recommended: Python 3.10 or 3.11).
+* **Operating Systems**: Windows 10/11, Linux (Ubuntu/Debian, CentOS, RHEL), macOS.
 
-### 2. Cài Đặt Thư Viện
-```
+### Installation
 
 ```bash
-# Di chuyển vào thư mục dự án
+# Clone or navigate to the project directory
 cd D:\DannoIDS
 
-# Cài đặt các phụ thuộc
+# Install required dependencies
 pip install -r requirements.txt
 ```
 
 > [!NOTE]
-> File `requirements.txt` chỉ bao gồm các thư viện xử lý dữ liệu và học máy cốt lõi (`numpy`, `pandas`, `scikit-learn`, `lightgbm`, `joblib`). Máy chủ Web và Parser chạy hoàn toàn trên chuẩn thư viện gốc của Python (`http.server`, `urllib`, `shlex`), không cần cài đặt thêm framework nặng như Flask hay Django.
+> Dependencies are strictly limited to core data processing and machine learning packages (`numpy`, `pandas`, `scikit-learn`, `lightgbm`, `joblib`). The Web Dashboard and API server run natively on Python's built-in `http.server`, `urllib`, and `shlex` modules without requiring external web frameworks.
 
 ---
 
-### 3. Khởi Chạy Web Dashboard
+### Running the Web Dashboard
 
-* **Cách 1: Sử dụng Script 1-Click**
-  * Trên **Windows**: Bấm đúp vào file `run.bat` $\rightarrow$ Nhấn phím `1`.
-  * Trên **Linux / macOS**: Chạy lệnh `./run.sh` $\rightarrow$ Chọn số `1`.
-* **Cách 2: Chạy trực tiếp qua dòng lệnh**
-  ```bash
-  python web_app.py --port 5000
-  ```
-* Mở trình duyệt và truy cập: **`http://localhost:5000`**
+#### Option A: One-Click Launcher
+* **Windows**: Double-click `run.bat` and enter option `1`.
+* **Linux / macOS**: Execute `./run.sh` and select option `1`.
+
+#### Option B: Command-Line Execution
+```bash
+python web_app.py --port 5000
+```
+Open your browser and navigate to: **`http://localhost:5000`**
 
 ---
 
-### 4. Sử Dụng Giao Diện Dòng Lệnh (CLI Scanner)
+### Command-Line Interface (CLI Scanner)
 
-DannoIDS cung cấp giao diện CLI mạnh mẽ, hỗ trợ kiểm tra tức thì nhiều ngữ cảnh khác nhau:
+The `detector.py` module provides a comprehensive CLI for ad-hoc inspection and log auditing:
 
-#### A. Phân tích lệnh cURL:
+#### 1. Analyze a cURL Command:
 ```bash
 python detector.py --curl "curl -i -X POST http://TARGET/login -d \"username=duy&password=DemoPass123\""
 ```
 
-#### B. Phân tích URL:
+#### 2. Analyze a URL:
 ```bash
 python detector.py --url "https://example.com/search?q=<script>alert(1)</script>"
 ```
 
-#### C. Phân tích Raw HTTP Request:
+#### 3. Analyze a Raw HTTP Request:
 ```bash
 python detector.py --raw-http "GET /index.php?id=1' UNION SELECT null,password FROM users-- HTTP/1.1\nHost: target.com"
 ```
 
-#### D. Quét toàn bộ file Log:
+#### 4. Audit a Web Server Access Log File:
 ```bash
 python detector.py --log logsfile.txt
 ```
-*Kết quả mẫu xuất ra console:*
+
+*Sample CLI output:*
 ```text
-Dang quet file log: logsfile.txt ...
-Tong so requests : 20
-So attack        : 10
-So normal        : 10
-Ty le attack     : 50.0%
-Phan loai attack:
+Scanning log file: logsfile.txt ...
+Total requests    : 20
+Attack detected   : 10
+Normal requests   : 10
+Attack ratio      : 50.0%
+Threat breakdown:
   - SQL Injection                 : 5
   - Other Attack (SSTI/XXE/SSRF)  : 2
   - Path Traversal / LFI          : 2
   - XSS                           : 1
 ```
 
-#### E. Chế độ nhập tương tác bàn phím (Interactive Shell):
+#### 5. Interactive Terminal Shell:
 ```bash
 python detector.py -i
 ```
 
 ---
 
-## 🔌 Tài Liệu REST API
+## REST API Reference
 
-DannoIDS tích hợp sẵn REST API chuẩn JSON giúp dễ dàng nhúng vào các hệ thống SIEM, Reverse Proxy hoặc API Gateway:
+DannoIDS exposes a lightweight REST API for automated integration into CI/CD pipelines, reverse proxies, and SIEM architectures:
 
-### 1. Phân Tích Request Đơn Lẻ (`POST /api/predict`)
+### 1. Predict Single Request (`POST /api/predict`)
 
 * **Endpoint**: `http://localhost:5000/api/predict`
 * **Method**: `POST`
-* **Headers**: `Content-Type: application/json`
+* **Content-Type**: `application/json`
 
-#### Request Body mẫu:
+#### Request Payload:
 ```json
 {
   "input": "curl -X POST http://example.com/login -d \"user=admin' OR '1'='1&pass=123\"",
@@ -300,7 +303,7 @@ DannoIDS tích hợp sẵn REST API chuẩn JSON giúp dễ dàng nhúng vào c�
 }
 ```
 
-#### Response JSON mẫu:
+#### Response Payload:
 ```json
 {
   "is_attack": true,
@@ -330,45 +333,54 @@ DannoIDS tích hợp sẵn REST API chuẩn JSON giúp dễ dàng nhúng vào c�
 }
 ```
 
+### 2. Log Analysis API (`POST /api/analyze-log`)
+Accepts raw log file streams or text chunks and returns an aggregated breakdown of detected threats, timestamps, client IPs, and classification categories.
+
 ---
 
-## 📊 Hiệu Năng & Thực Nghiệm
+## Performance and Benchmarks
 
-Mô hình được huấn luyện và đánh giá trên bộ dữ liệu kiểm thử tổng hợp gồm **131,053 mẫu request**, bao gồm lưu lượng web thực tế từ các bộ dataset nổi tiếng thế giới (CSIC 2010 HTTP Dataset, CIC-IDS-2017, SecLists Web Payloads):
+The model was evaluated against an aggregated benchmark corpus comprising **131,053 HTTP request records**, incorporating diverse real-world traffic profiles from benchmark datasets including CSIC 2010, CIC-IDS-2017, and SecLists payload corpora:
 
-| Chỉ Số Đánh Giá (Metric) | Kết Quả Đạt Được |
+| Evaluation Metric | Measured Benchmark Value |
 | :--- | :---: |
-| **Mô hình Thuật toán** | **LightGBM Multi-Class Classifier** |
-| **Kích thước Dữ liệu Huấn Luyện** | **131,053 dòng** |
-| **Thời gian Huấn luyện (Training Time)** | **3.44 giây** |
-| **Độ chính xác Tổng thể (Multi-Class Test Accuracy)** | **96.47%** |
-| **Nhận diện Nhị phân (Attack vs Normal)** | **96.65%** |
-| **Macro F1-Score** | **0.9690** |
-| **Thời gian Suy luận Trung bình (Inference Latency)** | **< 0.85 ms / request** |
-| **Tốc độ Xử lý (Throughput)** | **> 1,100 requests / giây (đơn luồng CPU)** |
+| **Model Architecture** | **LightGBM Multi-Class Classifier** |
+| **Training Dataset Size** | **131,053 records** |
+| **Model Training Duration** | **3.44 seconds** |
+| **Overall Multi-Class Test Accuracy** | **96.47%** |
+| **Binary Classification Accuracy (Attack vs. Normal)** | **96.65%** |
+| **Macro-Averaged F1-Score** | **0.9690** |
+| **Average Inference Latency** | **< 0.85 ms / request** |
+| **Processing Throughput** | **> 1,100 requests / second (Single CPU Core)** |
 
 ---
 
-## 🎨 Giao Diện Web Dashboard
+## Web Dashboard and Interface Design
 
-Giao diện Web của DannoIDS được thiết kế theo trường phái **Dark Minimalist (`#000000` / `#ffffff`)**:
-* **Typography**: Sử dụng font chữ hiện đại **Montserrat** cho tiêu đề & nhãn, kết hợp font đơn cách **JetBrains Mono** cho phần hiển thị mã nguồn và payload.
-* **Trực quan hóa 2 Giai đoạn**:
-  * **Stage 1 (Normalized Data)**: Hiển thị cấu trúc JSON chuẩn hóa sau khi tách từ cURL/Log, tích hợp nút sao chép nhanh 1 chạm.
-  * **Stage 2 (Security Assessment)**: Hiển thị thẻ trạng thái đe dọa (An toàn / Tấn công), chỉ rõ xuất xứ payload độc hại (`Threat Origin`), bảng xác suất 6 phân lớp và thống kê chi tiết 30 đặc trưng.
-* **Chế độ Phân tích Tệp Log hàng loạt**: Hỗ trợ kéo thả file log dung lượng lớn, phân trang mượt mà, lọc dữ liệu theo nhóm tấn công và xuất kết quả báo cáo ra file `.CSV`.
+The DannoIDS Web Dashboard is engineered around a **high-contrast monochrome design philosophy (`#000000` / `#ffffff`)**:
+
+* **Clean Typography Hierarchy**: Employs **Montserrat** for interface typography and **JetBrains Mono** for payload rendering and code segments.
+* **Two-Stage Visual Inspection Workflow**:
+  * **Stage 1 (Normalized Structure)**: Inspects the sanitized `NormalizedRequest` output with one-click JSON clipboard export.
+  * **Stage 2 (Security Assessment)**: Displays the primary threat classification badge, detected payload location (`Threat Origin`), multi-class probability breakdown, and a complete table of the 30 extracted feature values.
+* **High-Volume Log Auditing Tab**: Supports drag-and-drop ingestion of `.log`, `.txt`, and `.csv` files with client-side pagination, category filtering, and one-click CSV report export.
 
 ---
 
-## 🛡️ Tuyên Bố Miễn Trừ & Đạo Đức An Toàn
+## Ethical and Security Considerations
 
-Dự án **DannoIDS** được phát triển nhằm phục vụ mục đích nghiên cứu học thuật, kiểm thử phòng thủ (Defensive Security) và nâng cao năng lực giám sát an toàn thông tin cho hệ thống máy chủ web. Tác giả không chịu trách nhiệm đối với bất kỳ hành vi lạm dụng công cụ nào nhằm mục đích tấn công hoặc can thiệp trái phép vào các hệ thống chưa được cấp quyền.
+DannoIDS is developed exclusively for defensive cybersecurity research, academic study, and authorized operational monitoring. Users are responsible for ensuring that this software is operated in strict compliance with applicable local laws and organizational policies. The authors assume no liability for misuse or damages resulting from unauthorized deployment.
+
+---
+
+## License
+
+This project is distributed under the terms of the **MIT License**. Refer to the project license documentation for full terms and conditions.
 
 ---
 
 <div align="center">
 
-**DannoIDS — Empowering Modern Web Defense with Machine Learning**  
-*Phát triển bởi đội ngũ nghiên cứu ATTT & Machine Learning.*
+**DannoIDS: Empowering Modern Web Defense with High-Performance Machine Learning**
 
 </div>
